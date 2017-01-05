@@ -1,0 +1,25 @@
+structure of the db file.
+
+
+status
+- id_status
+- minmax
+- minmax action
+- maxmin
+- maxmin action # in the 1-100 game, if minmax is assigned (meaning the opponent will play next), then maxmin is not assigned. and vice versa. But i keep both.
+
+lt
+- id_status
+- id_action
+- new_status
+
+lto
+- id_status
+- id_action
+- new_status
+
+#idx id_status on 3 tables.
+
+
+
+
