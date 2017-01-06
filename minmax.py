@@ -25,37 +25,42 @@ class AI:
 		self.cur=self.conn.cursor()
 
 	def init_db(self):
-		self.cur.execute('create table states(state varchar(20), points integer, minmax integer, minmax_action varchar(20), maxmin integer, maxmin_action varchar(20));')
-		self.cur.execute('create unique index idx on states(state)');
-		self.cur.execute('create table lt(state varchar(20), action action varchar(20), newstate varchar(20));')
-		self.cur.execute('create unique index idx_lt on lt(state, action)');
-		self.cur.execute('create table lto(state varchar(20), action action varchar(20), newstate varchar(20));') 
-		self.cur.execute('create unique index idx_lto on lto(state, action)');
+		self.cur.execute('create table my_states(state varchar(20), maxmin integer, best_maxmin varchar(20));')
+		self.cur.execute('create unique index idx_my_states on my_states(state)');
+		self.cur.execute('create table opp_states(state varchar(20), minmax integer, best_minmax varchar(20));')
+		self.cur.execute('create unique index idx_opp_states on opp_states(state)');
+		self.cur.execute('create table lt(old_state varchar(20), action action varchar(20), new_state varchar(20), opponent boolean);')
+		self.cur.execute('create unique index idx_lt_old_state on lt(old_state, opponent, action)');
+		self.cur.execute('create unique index idx_lt_new_state on lt(new_state, opponent, action)');
 
 	def play(self, state): 
 		# find best action with max output 
 		return action
 
 	def init_state(self, state, actions, opponent=False):
-		self.cur.execute('select count(1) from states where state = ?;', (state, ))
+		if opponent:
+			tablename='opp_states'
+		else:
+			tablename='my_states'
+		self.cur.execute('select count(1) from %s where state = ?;' % tablename, (state, ))
 		d=self.cur.fetchone()
 		if d[0]==0: 
 			self.cur.execute('begin')
 			try:
-				self.cur.execute('insert into states(state) values (?);', (state, ))
-				if opponent:
-					tablename='lto'
-				else:
-					tablename='lt' 
-				self.cur.executemany('insert into %s(state, action) values (?, ?)' % tablename, [(state, action) for action in actions]) 
+				self.cur.execute('insert into %s(state) values (?);' % tablename, (state, ))
+				self.cur.executemany('insert into lt(old_state, action, opponent) values (?, ?, ?)', [(state, action, opponent) for action in actions]) 
 				self.cur.execute('commit') 
+				print("added")
 			except sqlite3.Error:
 				self.cur.execute("rollback")
-				print("blah")
 				raise
+		else:
+			print("already here")
 
 	def init_path(self, old_state, action, new_state, opponent=False):
-		pass
+		self.cur.execute('update lt set new_state=? where old_state=? and action=? and opponent=?;', (new_state, old_state, action, opponent))
+		print("lt updated")
+
 
 	def learn_points(self, state, points):
 		status=array_to_integer(status)

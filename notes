@@ -23,3 +23,39 @@ lto
 
 
 
+
+
+stateme lt maxmin
+stateoppponent lt minmax
+
+for each, my points
+
+test with that, based on the fact that i take the max for the stateopponent (the state before mine).
+
+
+test with maybe first to say 3 when picking number between 1 and 2, hopefully that won't be too much trees. Simulate that with dir names and file that represent minmax.
+or in ascii art maybe.
+
+play = 1,2
+win = 4
+
+o0,maxmin=1
+	m1, a1, minmax=1
+		o2, a1, maxmin=1
+			m3, a1, minmax=-1
+				o4, a1, p=-1
+			m4, a2, p=1
+		o3, a2, maxmin=1
+			m4, a1, p=1
+
+	m2, a2, minmax=-1
+		o3, a1, maxmin=1
+			m4, a1, p=1
+		o4, a2, p=-1
+		
+
+tables :
+my_state(state, maxmin, maxaction)
+opp_state(state, maxmin, maxaction)
+
+path(old_state, new_state, opponent) if opponent=True, then old_state is mine, new_state is opponent. It's the opponent turn.
