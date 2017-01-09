@@ -59,3 +59,24 @@ my_state(state, maxmin, maxaction)
 opp_state(state, maxmin, maxaction)
 
 path(old_state, new_state, opponent) if opponent=True, then old_state is mine, new_state is opponent. It's the opponent turn.
+
+
+
+calculate with recurse is stupid, i end up calculting multiples times the same thing
+i need to calculate just any solutions, starting with the end ones, or the one with the highest level.... mmh not sure on how to do that.
+
+ok nvm
+
+other issue is : find the untested stuff. 
+either i find a path before playing, and will do it, but that works only if i control both players
+either, when i calculate with a Null, i assume it's pretty good, and i have to find a way that it becomes the best path, no matter what. 
+
+or, i set minmax to 99 if there is a 99
+
+or, i set everythg to null, with matching action, and at the end, if maxmin is null, then i'll pick this one anyway.
+meaning i'll have no value, but an action
+
+
+
+maxmin : if null, then action = that
+minmax : if null, then action = that too
