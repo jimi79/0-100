@@ -95,11 +95,6 @@ class AI:
 			other_mm="minmax"
 			desc="desc"
 
-
-
-# to follow unknown paths, just check lt that leads to somethg i don't know
-
-		
 		action=None
 		d=self.cur.execute("select action from lt where old_state=? and new_state is null;", (state,)).fetchone()
 		if d is not None: # at least one record
@@ -124,18 +119,6 @@ class AI:
 				self.cur.execute(sql, (mm_val, action, state))
 				if self.verbose:
 					print("u %s minmax=%d, action=%d, state=%d" % (table, mm_val, action, state))
-
-	def recurse_calculate(self, state, opponent=None): # recurse from the end. 
-# recurse should create a list and send it back, then we sort/uniq it, and calculate it. but what for, because in any cases we know we have to recalculate everythg anyway, or at least every stuff below anythg that changes. might as well wait till the end and recalculate
-		if opponent==None:
-			self.recurse_calculate(state, True)
-			self.recurse_calculate(state, False)
-		else:
-			self.calculate(state, opponent)
-# now we check on what depends that state
-			datas=self.cur.execute("select lt.old_state from lt where new_state=? and opponent=?", (state, not opponent)).fetchall()
-			for data in datas:
-				self.recurse_calculate(data[0], not opponent)
 
 	def is_over(self):
 		d=self.cur.execute('select count(1) from lt where new_state is null;').fetchone()[0]
