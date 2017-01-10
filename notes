@@ -80,3 +80,6 @@ meaning i'll have no value, but an action
 
 maxmin : if null, then action = that
 minmax : if null, then action = that too
+
+
+soluce for 0 to 100:  89, 78, 67, 56, 45, 34, 23, 12,

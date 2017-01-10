@@ -3,7 +3,7 @@ import minmax
 import os
 import random
 
-const_win=100
+const_win=200
 const_max=10
 
 db='/tmp/ai.db'
@@ -53,4 +53,4 @@ def multiple_games(cpt):
 		one_game(verbose=False) 
 		if alice.is_over():
 			break
-	print("\033[0K\033[0Gdone")
+	print("\033[0K\033[0Gdone in %d iterations" % i)
