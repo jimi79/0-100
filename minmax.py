@@ -6,19 +6,6 @@ import pickle
 import random
 import sqlite3
 
-#todo : 
-# check we can have a status that take acocunt whos turn it is. i plan to use o0, m10, o15, m20, o23
-# calculate node only if it has to be calculated. not sure how to do that. the 'parent' solution that i failed to implement should work. maybe i could try it now
-# learn as it plays
-# assume somethg it never tried is a good idea. with the proper distinction of status between 'me' and 'opponent', that should be easier
-# would be fun to use a sqlite or any other database, instead of using memory. maybe i would actually need it, otherwise that will be slow.
-# learn to turn infos into a db. the 0-100 game won't fit in memory
-# if we update points, we do an sql that does only that. we don't load the object, to change the value, then save it. because that way we only save what's useful.
-# 	-> define what functions are needed to handle everythg that needs to be done (init_status, init_path, calculate(status))
-
-# i would like to find out how to calculate all possible games
-
-
 class AI: 
 	def __init__(self, dbname):
 		self.conn=sqlite3.connect(dbname, isolation_level=None)
@@ -35,8 +22,6 @@ class AI:
 		self.cur.execute('create unique index idx_lt_new_state on lt(new_state, opponent, action)');
 
 	def play(self, state, actions): 
-		# find best action with max output 
-		#action=random.randrange(0,10)+1
 		d=self.cur.execute("select action, maxmin from my_states where state=?", (state,)).fetchone()
 		if d[0] is None:
 			if self.verbose:

@@ -3,7 +3,7 @@ import minmax
 import os
 import random
 
-const_win=200
+const_win=100
 const_max=10
 
 db='/tmp/ai.db'
