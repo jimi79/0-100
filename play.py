@@ -1,30 +1,28 @@
 #!/usr/bin/python3
 #todo
 
-import minmax
+import minmax 
+from params import * 
 
-const_win=100
-const_action=10
-
-db='/tmp/ai.db'
-alice=minmax.AI(db) 
-score=1
-start=False
+alice=minmax.AI(db)
+state=1
+start=True
 if start:
-	action=alice.play(score, list(range(10)))
+	action=alice.play(state, const_actions)
 	print("I play %d" % action)
-	score=action
-while score < 100:
-	val=int(input("Score is %d, enter value : " % score))
-	score+=val
-	if score==100:
+	state=action
+while state < const_win:
+	actions=[a for a in const_actions if a+state<=const_win]
+	val=int(input("Score is %d, enter value, amongst %s : " % (state, actions)))
+	state+=val
+	if state==100:
 		print("Score is, you win")
 	else: 
-		actions=min(const_action, const_win - score)
-		action=alice.play(score, list(range(1, actions + 1)))
+		actions=[a for a in const_actions if a+state<=const_win]
+		action=alice.play(state, actions)
 		print("I play %d" % action)
-		score+=action
-		if score==100:
-			print("Score is 100, I win")
+		state+=action
+		if state==const_win:
+			print("Score is %s, I win" % const_win)
 
 

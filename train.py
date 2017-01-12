@@ -6,23 +6,19 @@ import time
 import random
 import copy
 
-const_win=1000
-const_max=23
+from params import *
 
-db='/tmp/ai.db'
 init_db=False
 if not(os.path.exists(db)):
 	init_db=True
 alice=minmax.AI(db) 
 alice.try_new_stuff=False
 if init_db:
-	alice.init_db()
-
+	alice.init_db() 
 alice.init_state(const_win, [], False)
-alice.init_state(const_win, [], True)
-
+alice.init_state(const_win, [], True) 
 alice.init_points(const_win, -1, False) # it's bad if the win value is reach and it's my turn to play
-alice.init_points(const_win, 1, True) # it's good if the win value is reached and it's the other turn's to play
+alice.init_points(const_win, 1, True) # it's good if the win value is reached and it's the other turn's to play 
 
 def one_game(verbose=0, init=[], learning=True): 
 	alice.verbose=(verbose>1)
@@ -30,9 +26,8 @@ def one_game(verbose=0, init=[], learning=True):
 	states=[]
 	init=copy.copy(init)
 	while state < const_win: 
-		states.append(state)
-		max_act=min(const_max, const_win-state)
-		actions=list(range(1, max_act+1))
+		states.append(state)  #?
+		actions=[a for a in const_actions if a+state<=const_win]
 		alice.init_state(state, actions, False)
 		alice.init_state(state, actions, True) # situations and what u can do with them are the samefor both players
 		if len(init)>0:
@@ -72,6 +67,4 @@ def multiple_games(cpt, init=[]):
 	else:
 		print("\033[0K\033[0Gnot done in %d iterations" % i)
 	game=one_game(verbose=0)
-	log.write("final : %s\n" % str(game))
-
-
+	log.write("final : %s\n" % str(game)) 
