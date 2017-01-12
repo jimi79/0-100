@@ -1,0 +1,37 @@
+. check if with sql, i can find parents as i can find childs. so that i could update the tree properly
+. note that the easiest way to try the tree is : goal to reach = 4, actions possible = 1 and 2
+
+. find a way to have it run in multiples process = split all branches. Meaning i should fix the first n games. 
+in the 0-9 game, it's easy. only the first branch has to be fixed. calculate 0, then calculate 1. but i need to have calculate 0 1 working to (first player plays 0, second player plays 1)
+
+The problem will then to merge databases
+
+attach '/path/b.db3' as toMerge;           
+BEGIN; 
+insert into AuditRecords select * from toMerge.AuditRecords; 
+COMMIT; 
+detach toMerge;
+
+So i can have a multi thread thingy, working over ssh. ssh and then sftp to fetch the db maybe ?
+Means i need another command in python. I have to find out how to control all that. will python do ssh, or will ssh do python ? second option seems better.
+meaning that python needs to merge too.
+
+That's a shame there is no multilevel parameters.
+
+----
+
+ok, first :
+are two games identical with try_new_stuff, if yes, why
+otherwise, compare two last games to tell when it's over. Or, alice should have a flag stating that the calculation didn't allow her any randomness (a bool returned by calculate). Calculate should return a {}. Yeah, that is good. Maybe. I mean it's good because i calculate for every possible node. if there is no unknown, then it's good. But there will be some, because i calculate for some number i will never reach.
+last two similar games is good too...... and modify the range.
+
+
+if i do not try_new_stuff, i can't tell when it's over, or maybe checking the last two games
+if i check last two games, with try_new_stuff, that happens that two are the same. not sure why
+try the fixed start to do multiproc
+
+Then, with init, i need :
+* init with 1 and 2 and so one
+* then, insert into select, where state<>those tested
+
+#init doesn't work, because if i specify only the first number, it takes 444 turns to try every pos, and then if i change the first number, it's one try or two
