@@ -6,8 +6,8 @@ import time
 import random
 import copy
 
-const_win=100
-const_max=10
+const_win=1000
+const_max=23
 
 db='/tmp/ai.db'
 init_db=False
@@ -55,6 +55,7 @@ def multiple_games(cpt, init=[]):
 	p=-1
 	log=open('log_%s' % time.strftime("%Y-%m-%d_%H-%M-%S", datetime.datetime.now().timetuple()), 'w')
 	old_game=[]
+	done=True
 	for i in range(cpt+1):
 		oldp=p
 		p=int(i/cpt*100)
@@ -63,9 +64,13 @@ def multiple_games(cpt, init=[]):
 		game=one_game(verbose=0, init=init) 
 		log.write('%s\n' % str(game)) 
 		if game==old_game:
+			done=True
 			break
 		old_game=game
-	print("\033[0K\033[0Gdone in %d iterations" % i)
+	if done:
+		print("\033[0K\033[0Gdone in %d iterations" % i)
+	else:
+		print("\033[0K\033[0Gnot done in %d iterations" % i)
 	game=one_game(verbose=0)
 	log.write("final : %s\n" % str(game))
 
