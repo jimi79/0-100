@@ -4,25 +4,31 @@
 import minmax 
 from params import * 
 
-alice=minmax.AI(db)
-state=1
-start=True
-if start:
-	action=alice.play(state, const_actions)
-	print("I play %d" % action)
-	state=action
-while state < const_win:
-	actions=[a for a in const_actions if a+state<=const_win]
-	val=int(input("Score is %d, enter value, amongst %s : " % (state, actions)))
-	state+=val
-	if state==100:
-		print("Score is, you win")
-	else: 
-		actions=[a for a in const_actions if a+state<=const_win]
-		action=alice.play(state, actions)
-		print("I play %d" % action)
-		state+=action
-		if state==const_win:
-			print("Score is %s, I win" % const_win)
-
+def play(win, list_actions, start=True, replay=False):
+	first=True
+	while replay or first:
+		first=False
+		print("First to reach %d wins" % win)
+		alice=minmax.AI(db)
+		state=0
+		if start:
+			action=alice.play(state, list_actions)
+			print("I play %d" % action)
+			state=action
+		while state < win:
+			actions=[a for a in list_actions if a+state<=win]
+			val=int(input("Score is %d, enter value, amongst %s : " % (state, actions)))
+			state+=val
+			if state==win:
+				print("Score is %d, you win", win)
+			else: 
+				actions=[a for a in list_actions if a+state<=win]
+				action=alice.play(state, actions)
+				print("Socre is %d, I play %d" % (state, action))
+				state+=action
+				if state==win:
+					print("Score is %s, I win" % win)
+		s=input("Do you want to replay ? y/n ")
+		if s.lower()=='n':
+			replay=False
 

@@ -4,51 +4,74 @@ import os
 import datetime
 import time
 import random
-import copy
-
+import copy 
 from params import *
 
-init_db=False
-if not(os.path.exists(db)):
-	init_db=True
-alice=minmax.AI(db) 
-alice.try_new_stuff=False
-if init_db:
-	alice.init_db() 
-alice.init_state(const_win, [], False)
-alice.init_state(const_win, [], True) 
-alice.init_points(const_win, -1, False) # it's bad if the win value is reach and it's my turn to play
-alice.init_points(const_win, 1, True) # it's good if the win value is reached and it's the other turn's to play 
+def get_alice(win=None):
+	init_db=False
+	if not(os.path.exists(db)):
+		init_db=True
+	alice=minmax.AI(db) 
+	alice.try_new_stuff=True #otherwise cannot play against human
+	if init_db:
+		alice.init_db() 
+	alice.init_state(win, [], False)
+	alice.init_state(win, [], True) 
+	alice.init_points(win, -1, False) # it's bad if the win value is reach and it's my turn to play
+	alice.init_points(win, 1, True) # it's good if the win value is reached and it's the other turn's to play 
+	return alice
 
-def one_game(verbose=0, init=[], learning=True): 
+def one_game(alice=None, verbose=0, init=[], learning=True, win=None, list_actions=None): 
+	if win==None:
+		win=const_win
+	if list_actions==None:
+		list_actions=const_actions
+	if alice==None:
+		alice=get_alice(win)
 	alice.verbose=(verbose>1)
 	state=0
 	states=[]
 	init=copy.copy(init)
-	while state < const_win: 
+	opponent=False
+	no_end_loop=False
+	while (state < win) and (not no_end_loop):
 		states.append(state)  #?
-		actions=[a for a in const_actions if a+state<=const_win]
-		alice.init_state(state, actions, False)
-		alice.init_state(state, actions, True) # situations and what u can do with them are the samefor both players
-		if len(init)>0:
-			action=init.pop(0) 
+		actions=[a for a in list_actions if a+state<=win]
+		if (len(actions)==0):
+			no_end_loop=True
 		else:
-			action=alice.play(state, actions)
-		old_state=state
-		state+=action
-		alice.init_path(old_state, action, state, False)
-		alice.init_path(old_state, action, state, True) # for the same score, the same action leads to the same path, for both players. That is often the case
-	states.append(const_win) 
+			alice.init_state(state, actions, False)
+			alice.init_state(state, actions, True) # situations and what u can do with them are the samefor both players
+			if len(init)>0:
+				action=init.pop(0) 
+			else:
+				action=alice.play(state, actions)
+			old_state=state
+			state+=action
+			alice.init_path(old_state, action, state, False)
+			alice.init_path(old_state, action, state, True) # for the same score, the same action leads to the same path, for both players. That is often the case
+			opponent=not opponent
+	states.append(win) 
 	alice.verbose=False
 	if learning:
-		for i in range(const_win,-1,-1):
+		for i in range(win,-1,-1):
 			alice.calculate(i, False)
 			alice.calculate(i, True) 
-	return states
+	if no_end_loop:
+		alice.init_points(state, -1, False) # it's bad if the win value is reach and it's my turn to play
+		alice.init_points(state, -1, True) # it's bad for the other too, just avoid 
+	return states, opponent
 
-def multiple_games(cpt, init=[]):
+def multiple_games(alice=None, cpt=1000, init=[], log=False, win=None, list_actions=None):
+	if win==None:
+		win=const_win
+	if list_actions==None:
+		list_actions=const_actions
+	if alice==None:
+		alice=get_alice(win)
 	p=-1
-	log=open('log_%s' % time.strftime("%Y-%m-%d_%H-%M-%S", datetime.datetime.now().timetuple()), 'w')
+	if log:
+		log=open('log_%s' % time.strftime("%Y-%m-%d_%H-%M-%S", datetime.datetime.now().timetuple()), 'w')
 	old_game=[]
 	done=True
 	for i in range(cpt+1):
@@ -56,8 +79,9 @@ def multiple_games(cpt, init=[]):
 		p=int(i/cpt*100)
 		if oldp!=p:
 			print("\033[0G%d %%" % p, end="", flush=True) 
-		game=one_game(verbose=0, init=init) 
-		log.write('%s\n' % str(game)) 
+		game=one_game(verbose=0, init=init, win=win, list_actions=list_actions) 
+		if log:
+			log.write('%s\n' % str(game)) 
 		if game==old_game:
 			done=True
 			break
@@ -66,5 +90,7 @@ def multiple_games(cpt, init=[]):
 		print("\033[0K\033[0Gdone in %d iterations" % i)
 	else:
 		print("\033[0K\033[0Gnot done in %d iterations" % i)
-	game=one_game(verbose=0)
-	log.write("final : %s\n" % str(game)) 
+	if log:
+		game=one_game(verbose=0, win=win, list_actions=list_actions)
+		log.write("final : %s\n" % str(game)) 
+	return done

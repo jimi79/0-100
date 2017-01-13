@@ -35,3 +35,11 @@ Then, with init, i need :
 * then, insert into select, where state<>those tested
 
 #init doesn't work, because if i specify only the first number, it takes 444 turns to try every pos, and then if i change the first number, it's one try or two
+
+
+
+Generate random lists with random holes, and have it train, then play against each other, and stats which one
+
+
+rename train in train_random.
+
