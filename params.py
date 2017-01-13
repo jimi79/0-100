@@ -9,4 +9,4 @@
 #const_actions.remove(8) 
 const_win=100
 const_actions=list(range(1,11))
-db='/tmp/ai.db' 
+const_db='ai.db'

@@ -7,11 +7,13 @@ import random
 import copy 
 from params import *
 
-def get_alice(win=None):
+def get_alice(win=None, filename=None):
+	if filename==None:
+		filename=const_db
 	init_db=False
-	if not(os.path.exists(db)):
+	if not(os.path.exists(filename)):
 		init_db=True
-	alice=minmax.AI(db) 
+	alice=minmax.AI(filename) 
 	alice.try_new_stuff=True #otherwise cannot play against human
 	if init_db:
 		alice.init_db() 
@@ -28,7 +30,7 @@ def one_game(alice=None, verbose=0, init=[], learning=True, win=None, list_actio
 		list_actions=const_actions
 	if alice==None:
 		alice=get_alice(win)
-	alice.verbose=(verbose>1)
+	alice.verbose=verbose>1
 	state=0
 	states=[]
 	init=copy.copy(init)
@@ -52,7 +54,7 @@ def one_game(alice=None, verbose=0, init=[], learning=True, win=None, list_actio
 			alice.init_path(old_state, action, state, True) # for the same score, the same action leads to the same path, for both players. That is often the case
 			opponent=not opponent
 	states.append(win) 
-	alice.verbose=False
+	alice.verbose=verbose>2
 	if learning:
 		for i in range(win,-1,-1):
 			alice.calculate(i, False)
@@ -62,13 +64,13 @@ def one_game(alice=None, verbose=0, init=[], learning=True, win=None, list_actio
 		alice.init_points(state, -1, True) # it's bad for the other too, just avoid 
 	return states, opponent
 
-def multiple_games(alice=None, cpt=1000, init=[], log=False, win=None, list_actions=None):
+def multiple_games(cpt=1000, alice=None, init=[], log=False, win=None, list_actions=None):
 	if win==None:
 		win=const_win
 	if list_actions==None:
 		list_actions=const_actions
 	if alice==None:
-		alice=get_alice(win)
+		alice=get_alice(win, filename=':memory:')
 	p=-1
 	if log:
 		log=open('log_%s' % time.strftime("%Y-%m-%d_%H-%M-%S", datetime.datetime.now().timetuple()), 'w')
@@ -79,7 +81,7 @@ def multiple_games(alice=None, cpt=1000, init=[], log=False, win=None, list_acti
 		p=int(i/cpt*100)
 		if oldp!=p:
 			print("\033[0G%d %%" % p, end="", flush=True) 
-		game=one_game(verbose=0, init=init, win=win, list_actions=list_actions) 
+		game=one_game(alice=alice, verbose=0, init=init, win=win, list_actions=list_actions) 
 		if log:
 			log.write('%s\n' % str(game)) 
 		if game==old_game:
@@ -93,4 +95,8 @@ def multiple_games(alice=None, cpt=1000, init=[], log=False, win=None, list_acti
 	if log:
 		game=one_game(verbose=0, win=win, list_actions=list_actions)
 		log.write("final : %s\n" % str(game)) 
+
+	alice.dump_to_disk(const_db)
+
 	return done
+

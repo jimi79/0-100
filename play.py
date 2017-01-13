@@ -9,7 +9,7 @@ def play(win, list_actions, start=True, replay=False):
 	while replay or first:
 		first=False
 		print("First to reach %d wins" % win)
-		alice=minmax.AI(db)
+		alice=minmax.AI(const_db)
 		state=0
 		if start:
 			action=alice.play(state, list_actions)
@@ -20,7 +20,7 @@ def play(win, list_actions, start=True, replay=False):
 			val=int(input("Score is %d, enter value, amongst %s : " % (state, actions)))
 			state+=val
 			if state==win:
-				print("Score is %d, you win", win)
+				print("Score is %d, you win" % win)
 			else: 
 				actions=[a for a in list_actions if a+state<=win]
 				action=alice.play(state, actions)

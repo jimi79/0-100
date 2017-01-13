@@ -24,7 +24,13 @@ class AI:
 
 	def play(self, state, actions): 
 		d=self.cur.execute("select action, maxmin from my_states where state=?", (state,)).fetchone()
-		if d[0] is None:
+		found=True
+		if d is None:
+			found=False
+		if found:
+			if d[0] is None:
+				found=False
+		if not found:
 			if self.verbose:
 				print("Picked an action at random")
 			action=random.choice(actions)
@@ -122,3 +128,9 @@ class AI:
 	def is_over(self):
 		d=self.cur.execute('select count(1) from lt where new_state is null;').fetchone()[0]
 		return d==0
+
+	def dump_to_disk(self, filename):
+		if os.path.exists(filename):
+			os.remove(filename)
+		with sqlite3.connect(filename) as new_db:
+			new_db.executescript("".join(self.conn.iterdump()))
