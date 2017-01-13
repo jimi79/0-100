@@ -65,6 +65,7 @@ def one_game(alice=None, verbose=0, init=[], learning=True, win=None, list_actio
 	return states, opponent
 
 def multiple_games(cpt=1000, alice=None, init=[], log=False, win=None, list_actions=None):
+	a=datetime.datetime.now()
 	if win==None:
 		win=const_win
 	if list_actions==None:
@@ -88,15 +89,16 @@ def multiple_games(cpt=1000, alice=None, init=[], log=False, win=None, list_acti
 			done=True
 			break
 		old_game=game
+	alice.dump_to_disk(const_db)
+	b=datetime.datetime.now() 
+	c=b-a 
 	if done:
-		print("\033[0K\033[0Gdone in %d iterations" % i)
+		print("\033[0K\033[0Gdone in %d iterations in %d secondes" % (i, c.total_seconds()))
 	else:
-		print("\033[0K\033[0Gnot done in %d iterations" % i)
+		print("\033[0K\033[0Gnot done in %d iterations in %d secondes" % (i, c.total_seconds()))
 	if log:
 		game=one_game(verbose=0, win=win, list_actions=list_actions)
 		log.write("final : %s\n" % str(game)) 
-
-	alice.dump_to_disk(const_db)
-
+	
 	return done
 
